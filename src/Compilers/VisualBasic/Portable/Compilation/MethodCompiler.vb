@@ -887,7 +887,7 @@ Namespace Microsoft.CodeAnalysis.VisualBasic
                     Dim emittedBody As MethodBody = Nothing
 
                     If Not diagnosticsThisMethod.HasAnyErrors Then
-                        Dim variableSlotAllocatorOpt As VariableSlotAllocator = Nothing
+                        Dim lazyVariableSlotAllocator As VariableSlotAllocator = Nothing
                         Dim statemachineTypeOpt As StateMachineTypeSymbol = Nothing
 
                         Dim lambdaDebugInfoBuilder = ArrayBuilder(Of LambdaDebugInfo).GetInstance()
@@ -901,11 +901,11 @@ Namespace Microsoft.CodeAnalysis.VisualBasic
                             previousSubmissionFields:=Nothing,
                             compilationState:=compilationState,
                             diagnostics:=diagnosticsThisMethod,
+                            lazyVariableSlotAllocator:=lazyVariableSlotAllocator,
                             lambdaDebugInfoBuilder:=lambdaDebugInfoBuilder,
                             closureDebugInfoBuilder:=closureDebugInfoBuilder,
                             delegateRelaxationIdDispenser:=delegateRelaxationIdDispenser,
                             stateMachineTypeOpt:=statemachineTypeOpt,
-                            variableSlotAllocatorOpt:=variableSlotAllocatorOpt,
                             allowOmissionOfConditionalCalls:=_moduleBeingBuiltOpt.AllowOmissionOfConditionalCalls,
                             isBodySynthesized:=True)
 
@@ -919,7 +919,7 @@ Namespace Microsoft.CodeAnalysis.VisualBasic
                                                              lambdaDebugInfoBuilder.ToImmutable(),
                                                              closureDebugInfoBuilder.ToImmutable(),
                                                              statemachineTypeOpt,
-                                                             variableSlotAllocatorOpt,
+                                                             lazyVariableSlotAllocator,
                                                              debugDocumentProvider:=Nothing,
                                                              diagnostics:=diagnosticsThisMethod,
                                                              generateDebugInfo:=False)
@@ -1306,11 +1306,11 @@ Namespace Microsoft.CodeAnalysis.VisualBasic
                                                              previousSubmissionFields,
                                                              compilationState,
                                                              diagnostics,
+                                                             lazyVariableSlotAllocator:=Nothing,
                                                              lambdaDebugInfoBuilder:=lambdaDebugInfoBuilder,
                                                              closureDebugInfoBuilder:=closureDebugInfoBuilder,
                                                              delegateRelaxationIdDispenser:=delegateRelaxationIdDispenser,
                                                              stateMachineTypeOpt:=Nothing,
-                                                             variableSlotAllocatorOpt:=Nothing,
                                                              allowOmissionOfConditionalCalls:=True,
                                                              isBodySynthesized:=True)
 
@@ -1394,7 +1394,7 @@ Namespace Microsoft.CodeAnalysis.VisualBasic
                 diagnostics = DiagnosticBag.GetInstance()
             End If
 
-            Dim variableSlotAllocatorOpt As VariableSlotAllocator = Nothing
+            Dim lazyVariableSlotAllocator As VariableSlotAllocator = Nothing
             Dim stateMachineTypeOpt As StateMachineTypeSymbol = Nothing
             Dim allowOmissionOfConditionalCalls = _moduleBeingBuiltOpt Is Nothing OrElse _moduleBeingBuiltOpt.AllowOmissionOfConditionalCalls
             Dim lambdaDebugInfoBuilder = ArrayBuilder(Of LambdaDebugInfo).GetInstance()
@@ -1406,11 +1406,11 @@ Namespace Microsoft.CodeAnalysis.VisualBasic
                                                    previousSubmissionFields,
                                                    compilationState,
                                                    diagnostics,
+                                                   lazyVariableSlotAllocator,
                                                    lambdaDebugInfoBuilder,
                                                    closureDebugInfoBuilder,
                                                    delegateRelaxationIdDispenser,
-                                                   stateMachineTypeOpt,
-                                                   variableSlotAllocatorOpt,
+                                                   stateMachineTypeOpt,                                                   
                                                    allowOmissionOfConditionalCalls,
                                                    isBodySynthesized:=False)
 
@@ -1447,14 +1447,14 @@ Namespace Microsoft.CodeAnalysis.VisualBasic
             End If
 
             ' NOTE: additional check for statement.HasErrors is needed to identify parse errors which didn't get into diagsForCurrentMethod
-            Dim methodBody As methodBody = GenerateMethodBody(_moduleBeingBuiltOpt,
+            Dim methodBody As MethodBody = GenerateMethodBody(_moduleBeingBuiltOpt,
                                                               method,
                                                               methodOrdinal,
                                                               body,
                                                               lambdaDebugInfoBuilder.ToImmutable(),
                                                               closureDebugInfoBuilder.ToImmutable(),
                                                               stateMachineTypeOpt,
-                                                              variableSlotAllocatorOpt,
+                                                              lazyVariableSlotAllocator,
                                                               _debugDocumentProvider,
                                                               diagnostics,
                                                               generateDebugInfo:=_generateDebugInfo AndAlso method.GenerateDebugInfo)
