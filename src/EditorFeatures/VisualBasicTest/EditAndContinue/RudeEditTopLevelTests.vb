@@ -2548,7 +2548,7 @@ End Class
             Dim edits = GetTopEdits(src1, src2)
 
             edits.VerifySemanticDiagnostics(
-                Diagnostic(RudeEditKind.Delete, "Class C", "constructor"))
+                Diagnostic(RudeEditKind.Delete, "Class C", FeaturesResources.Constructor))
         End Sub
 
         <Fact>
@@ -2558,7 +2558,7 @@ End Class
             Dim edits = GetTopEdits(src1, src2)
 
             edits.VerifySemanticDiagnostics(
-                Diagnostic(RudeEditKind.Delete, "Class C", "constructor"))
+                Diagnostic(RudeEditKind.Delete, "Class C", FeaturesResources.Constructor))
         End Sub
 
         <Fact>
@@ -2568,7 +2568,7 @@ End Class
             Dim edits = GetTopEdits(src1, src2)
 
             edits.VerifySemanticDiagnostics(
-                Diagnostic(RudeEditKind.Delete, "Class C", "constructor"))
+                Diagnostic(RudeEditKind.Delete, "Class C", FeaturesResources.Constructor))
         End Sub
 
         <Fact>
@@ -2578,7 +2578,7 @@ End Class
             Dim edits = GetTopEdits(src1, src2)
 
             edits.VerifySemanticDiagnostics(
-                Diagnostic(RudeEditKind.Delete, "Class C", "constructor"))
+                Diagnostic(RudeEditKind.Delete, "Class C", FeaturesResources.Constructor))
         End Sub
 
         <Fact>
@@ -2784,7 +2784,7 @@ End Class
                                   {srcB1},
                                   {srcB2},
                                   Nothing,
-                                  Diagnostic(RudeEditKind.Delete, "Partial Class C", "constructor"))
+                                  Diagnostic(RudeEditKind.Delete, "Partial Class C", FeaturesResources.Constructor))
         End Sub
 
         <Fact>
@@ -3490,9 +3490,9 @@ End Class
 
             Dim edits = GetTopEdits(src1, src2)
             edits.VerifySemanticDiagnostics(
-                Diagnostic(RudeEditKind.InsertIntoClassWithLayout, "b", "field", "class"),
-                Diagnostic(RudeEditKind.InsertIntoClassWithLayout, "c", "field", "class"),
-                Diagnostic(RudeEditKind.InsertIntoClassWithLayout, "d", "field", "class"))
+                Diagnostic(RudeEditKind.InsertIntoClassWithLayout, "b", FeaturesResources.Field, FeaturesResources.Class),
+                Diagnostic(RudeEditKind.InsertIntoClassWithLayout, "c", FeaturesResources.Field, FeaturesResources.Class),
+                Diagnostic(RudeEditKind.InsertIntoClassWithLayout, "d", FeaturesResources.Field, FeaturesResources.Class))
         End Sub
 
         <Fact>
@@ -3520,9 +3520,9 @@ End Class
 
             Dim edits = GetTopEdits(src1, src2)
             edits.VerifySemanticDiagnostics(
-                Diagnostic(RudeEditKind.InsertIntoClassWithLayout, "b", "field", "class"),
-                Diagnostic(RudeEditKind.InsertIntoClassWithLayout, "c", "field", "class"),
-                Diagnostic(RudeEditKind.InsertIntoClassWithLayout, "d", "field", "class"))
+                Diagnostic(RudeEditKind.InsertIntoClassWithLayout, "b", FeaturesResources.Field, FeaturesResources.Class),
+                Diagnostic(RudeEditKind.InsertIntoClassWithLayout, "c", FeaturesResources.Field, FeaturesResources.Class),
+                Diagnostic(RudeEditKind.InsertIntoClassWithLayout, "d", FeaturesResources.Field, FeaturesResources.Class))
         End Sub
 
 #End Region
@@ -3677,8 +3677,8 @@ End Structure
             Dim edits = GetTopEdits(src1, src2)
 
             edits.VerifySemanticDiagnostics(
-                Diagnostic(RudeEditKind.InsertIntoStruct, "Private Property b As Integer", "auto-property", "structure"),
-                Diagnostic(RudeEditKind.InsertIntoStruct, "Private Shared Property c As Integer", "auto-property", "structure"))
+                Diagnostic(RudeEditKind.InsertIntoStruct, "Private Property b As Integer", FeaturesResources.AutoProperty, VBFeaturesResources.StructureStatement),
+                Diagnostic(RudeEditKind.InsertIntoStruct, "Private Shared Property c As Integer", FeaturesResources.AutoProperty, VBFeaturesResources.StructureStatement))
         End Sub
 
         <Fact>
@@ -3722,8 +3722,8 @@ End Class
 ]]>.Value
             Dim edits = GetTopEdits(src1, src2)
             edits.VerifySemanticDiagnostics(
-                Diagnostic(RudeEditKind.InsertIntoClassWithLayout, "Private Property b As Integer", "auto-property", "class"),
-                Diagnostic(RudeEditKind.InsertIntoClassWithLayout, "Private Shared Property c As Integer", "auto-property", "class"))
+                Diagnostic(RudeEditKind.InsertIntoClassWithLayout, "Private Property b As Integer", FeaturesResources.AutoProperty, FeaturesResources.Class),
+                Diagnostic(RudeEditKind.InsertIntoClassWithLayout, "Private Shared Property c As Integer", FeaturesResources.AutoProperty, FeaturesResources.Class))
         End Sub
 
 #End Region
@@ -4026,7 +4026,7 @@ End Class
             Dim edits = GetTopEdits(src1, src2)
 
             edits.VerifySemanticDiagnostics(
-                Diagnostic(RudeEditKind.Delete, "Class C", "constructor"))
+                Diagnostic(RudeEditKind.Delete, "Class C", FeaturesResources.Constructor))
         End Sub
 
         <Fact>
@@ -4036,7 +4036,7 @@ End Class
             Dim edits = GetTopEdits(src1, src2)
 
             edits.VerifySemanticDiagnostics(
-                Diagnostic(RudeEditKind.Delete, "Class C", "constructor"))
+                Diagnostic(RudeEditKind.Delete, "Class C", FeaturesResources.Constructor))
         End Sub
 
         <Fact>
@@ -4841,7 +4841,7 @@ End Class
                 "Update [As Action]@100 -> [As Action(Of T)]@112")
 
             edits.VerifyRudeDiagnostics(
-                Diagnostic(RudeEditKind.TypeUpdate, "Event E", "event"),
+                Diagnostic(RudeEditKind.TypeUpdate, "Event E", FeaturesResources.Event),
                 Diagnostic(RudeEditKind.TypeUpdate, "value As Action(Of T)", FeaturesResources.Parameter),
                 Diagnostic(RudeEditKind.TypeUpdate, "value As Action(Of T)", FeaturesResources.Parameter))
         End Sub

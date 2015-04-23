@@ -49,7 +49,7 @@ using System.Collections.Generic;
                 "Delete [using System.Collections;]@29");
 
             edits.VerifyRudeDiagnostics(
-                Diagnostic(RudeEditKind.Delete, null, "using directive"));
+                Diagnostic(RudeEditKind.Delete, null, CSharpFeaturesResources.UsingDirective));
         }
 
         [Fact]
@@ -3560,7 +3560,7 @@ class B
             var edits = GetTopEdits(src1, src2);
 
             edits.VerifySemanticDiagnostics(
-                Diagnostic(RudeEditKind.Delete, "class C", "constructor"));
+                Diagnostic(RudeEditKind.Delete, "class C", FeaturesResources.Constructor));
         }
 
         [Fact]
@@ -3585,7 +3585,7 @@ class B
             var edits = GetTopEdits(src1, src2);
 
             edits.VerifySemanticDiagnostics(
-                Diagnostic(RudeEditKind.Delete, "class C", "constructor"));
+                Diagnostic(RudeEditKind.Delete, "class C", FeaturesResources.Constructor));
         }
 
         [Fact]
@@ -3597,7 +3597,7 @@ class B
             var edits = GetTopEdits(src1, src2);
 
             edits.VerifySemanticDiagnostics(
-                Diagnostic(RudeEditKind.Delete, "class C", "constructor"));
+                Diagnostic(RudeEditKind.Delete, "class C", FeaturesResources.Constructor));
         }
 
         [Fact]
@@ -3609,7 +3609,7 @@ class B
             var edits = GetTopEdits(src1, src2);
 
             edits.VerifySemanticDiagnostics(
-                Diagnostic(RudeEditKind.Delete, "class C", "constructor"));
+                Diagnostic(RudeEditKind.Delete, "class C", FeaturesResources.Constructor));
         }
 
         [Fact]
@@ -3621,7 +3621,7 @@ class B
             var edits = GetTopEdits(src1, src2);
 
             edits.VerifySemanticDiagnostics(
-                Diagnostic(RudeEditKind.Delete, "class C", "constructor"));
+                Diagnostic(RudeEditKind.Delete, "class C", FeaturesResources.Constructor));
         }
 
         [Fact]
@@ -3633,7 +3633,7 @@ class B
             var edits = GetTopEdits(src1, src2);
 
             edits.VerifySemanticDiagnostics(
-                Diagnostic(RudeEditKind.Delete, "class C", "constructor"));
+                Diagnostic(RudeEditKind.Delete, "class C", FeaturesResources.Constructor));
         }
 
         [Fact]
@@ -3878,7 +3878,7 @@ class B
                 new[] { srcB1 },
                 new[] { srcB2 },
                 null,
-                Diagnostic(RudeEditKind.Delete, "partial class C", "constructor"));
+                Diagnostic(RudeEditKind.Delete, "partial class C", FeaturesResources.Constructor));
         }
 
         [Fact]
@@ -4141,7 +4141,7 @@ class B
             var edits = GetTopEdits(src1, src2);
 
             edits.VerifySemanticDiagnostics(
-                Diagnostic(RudeEditKind.Delete, "class C", "constructor"));
+                Diagnostic(RudeEditKind.Delete, "class C", FeaturesResources.Constructor));
         }
 
         [Fact]
@@ -4153,7 +4153,7 @@ class B
             var edits = GetTopEdits(src1, src2);
 
             edits.VerifySemanticDiagnostics(
-                Diagnostic(RudeEditKind.Delete, "class C", "constructor"));
+                Diagnostic(RudeEditKind.Delete, "class C", FeaturesResources.Constructor));
         }
 
         [Fact]
@@ -4441,7 +4441,7 @@ class B
 
             // TODO (tomat): diagnostic should point to the field initializer
             edits.VerifySemanticDiagnostics(
-                Diagnostic(RudeEditKind.StackAllocUpdate, "stackalloc", "constructor"));
+                Diagnostic(RudeEditKind.StackAllocUpdate, "stackalloc", FeaturesResources.Constructor));
         }
 
         [Fact]
@@ -4454,7 +4454,7 @@ class B
 
             // TODO (tomat): diagnostic should point to the property initializer
             edits.VerifySemanticDiagnostics(
-                Diagnostic(RudeEditKind.StackAllocUpdate, "stackalloc", "constructor"));
+                Diagnostic(RudeEditKind.StackAllocUpdate, "stackalloc", FeaturesResources.Constructor));
         }
 
         [Fact]
@@ -4470,7 +4470,7 @@ class B
 
             // TODO (tomat): no errors
             edits.VerifySemanticDiagnostics(
-                Diagnostic(RudeEditKind.RUDE_EDIT_LAMBDA_EXPRESSION, "()", "constructor"));
+                Diagnostic(RudeEditKind.RUDE_EDIT_LAMBDA_EXPRESSION, "()", FeaturesResources.Constructor));
         }
 
         [Fact]
@@ -4483,7 +4483,7 @@ class B
 
             // TODO (tomat): no errors
             edits.VerifySemanticDiagnostics(
-                Diagnostic(RudeEditKind.RUDE_EDIT_LAMBDA_EXPRESSION, "()", "constructor"));
+                Diagnostic(RudeEditKind.RUDE_EDIT_LAMBDA_EXPRESSION, "()", FeaturesResources.Constructor));
         }
 
         [Fact]
@@ -4499,7 +4499,7 @@ class B
 
             // TODO (tomat): no errors
             edits.VerifySemanticDiagnostics(
-                Diagnostic(RudeEditKind.RUDE_EDIT_QUERY_EXPRESSION, "from", "constructor"));
+                Diagnostic(RudeEditKind.RUDE_EDIT_QUERY_EXPRESSION, "from", FeaturesResources.Constructor));
         }
 
         [Fact]
@@ -4512,7 +4512,7 @@ class B
 
             // TODO (tomat): no errors
             edits.VerifySemanticDiagnostics(
-                Diagnostic(RudeEditKind.RUDE_EDIT_QUERY_EXPRESSION, "from", "constructor"));
+                Diagnostic(RudeEditKind.RUDE_EDIT_QUERY_EXPRESSION, "from", FeaturesResources.Constructor));
         }
 
         [Fact]
@@ -4837,10 +4837,10 @@ struct S
             var edits = GetTopEdits(src1, src2);
 
             edits.VerifySemanticDiagnostics(
-                Diagnostic(RudeEditKind.InsertIntoStruct, "b", "field", "struct"),
-                Diagnostic(RudeEditKind.InsertIntoStruct, "c", "field", "struct"),
-                Diagnostic(RudeEditKind.InsertIntoStruct, "f = 1", "field", "struct"),
-                Diagnostic(RudeEditKind.InsertIntoStruct, "d", "event field", "struct"));
+                Diagnostic(RudeEditKind.InsertIntoStruct, "b", FeaturesResources.Field, CSharpFeaturesResources.Struct),
+                Diagnostic(RudeEditKind.InsertIntoStruct, "c", FeaturesResources.Field, CSharpFeaturesResources.Struct),
+                Diagnostic(RudeEditKind.InsertIntoStruct, "f = 1", FeaturesResources.Field, CSharpFeaturesResources.Struct),
+                Diagnostic(RudeEditKind.InsertIntoStruct, "d", CSharpFeaturesResources.EventField, CSharpFeaturesResources.Struct));
         }
 
         [Fact]
@@ -4914,9 +4914,9 @@ class C
             var edits = GetTopEdits(src1, src2);
 
             edits.VerifySemanticDiagnostics(
-                Diagnostic(RudeEditKind.InsertIntoClassWithLayout, "b", "field", "class"),
-                Diagnostic(RudeEditKind.InsertIntoClassWithLayout, "c", "field", "class"),
-                Diagnostic(RudeEditKind.InsertIntoClassWithLayout, "d", "field", "class"));
+                Diagnostic(RudeEditKind.InsertIntoClassWithLayout, "b", FeaturesResources.Field, FeaturesResources.Class),
+                Diagnostic(RudeEditKind.InsertIntoClassWithLayout, "c", FeaturesResources.Field, FeaturesResources.Class),
+                Diagnostic(RudeEditKind.InsertIntoClassWithLayout, "d", FeaturesResources.Field, FeaturesResources.Class));
         }
 
         [Fact]
@@ -4947,9 +4947,9 @@ class C
             var edits = GetTopEdits(src1, src2);
 
             edits.VerifySemanticDiagnostics(
-                Diagnostic(RudeEditKind.InsertIntoClassWithLayout, "b", "field", "class"),
-                Diagnostic(RudeEditKind.InsertIntoClassWithLayout, "c", "field", "class"),
-                Diagnostic(RudeEditKind.InsertIntoClassWithLayout, "d", "field", "class"));
+                Diagnostic(RudeEditKind.InsertIntoClassWithLayout, "b", FeaturesResources.Field, FeaturesResources.Class),
+                Diagnostic(RudeEditKind.InsertIntoClassWithLayout, "c", FeaturesResources.Field, FeaturesResources.Class),
+                Diagnostic(RudeEditKind.InsertIntoClassWithLayout, "d", FeaturesResources.Field, FeaturesResources.Class));
         }
 
         [Fact]
@@ -5264,9 +5264,9 @@ struct S
             var edits = GetTopEdits(src1, src2);
 
             edits.VerifySemanticDiagnostics(
-                Diagnostic(RudeEditKind.InsertIntoStruct, "private static int c { get; set; }", "auto-property", "struct"),
-                Diagnostic(RudeEditKind.InsertIntoStruct, "private static int g { get; } = 1;", "auto-property", "struct"),
-                Diagnostic(RudeEditKind.InsertIntoStruct, "private static int i { get; set; } = 1;", "auto-property", "struct"));
+                Diagnostic(RudeEditKind.InsertIntoStruct, "private static int c { get; set; }", FeaturesResources.AutoProperty, CSharpFeaturesResources.Struct),
+                Diagnostic(RudeEditKind.InsertIntoStruct, "private static int g { get; } = 1;", FeaturesResources.AutoProperty, CSharpFeaturesResources.Struct),
+                Diagnostic(RudeEditKind.InsertIntoStruct, "private static int i { get; set; } = 1;", FeaturesResources.AutoProperty, CSharpFeaturesResources.Struct));
         }
 
         [Fact]
@@ -5304,12 +5304,12 @@ class C
             var edits = GetTopEdits(src1, src2);
 
             edits.VerifySemanticDiagnostics(
-                Diagnostic(RudeEditKind.InsertIntoClassWithLayout, "private int b { get; set; }", "auto-property", "class"),
-                Diagnostic(RudeEditKind.InsertIntoClassWithLayout, "private static int c { get; set; }", "auto-property", "class"),
-                Diagnostic(RudeEditKind.InsertIntoClassWithLayout, "private int f { get; } = 1;", "auto-property", "class"),
-                Diagnostic(RudeEditKind.InsertIntoClassWithLayout, "private static int g { get; } = 1;", "auto-property", "class"),
-                Diagnostic(RudeEditKind.InsertIntoClassWithLayout, "private int h { get; set; } = 1;", "auto-property", "class"),
-                Diagnostic(RudeEditKind.InsertIntoClassWithLayout, "private static int i { get; set; } = 1;", "auto-property", "class"));
+                Diagnostic(RudeEditKind.InsertIntoClassWithLayout, "private int b { get; set; }", FeaturesResources.AutoProperty, FeaturesResources.Class),
+                Diagnostic(RudeEditKind.InsertIntoClassWithLayout, "private static int c { get; set; }", FeaturesResources.AutoProperty, FeaturesResources.Class),
+                Diagnostic(RudeEditKind.InsertIntoClassWithLayout, "private int f { get; } = 1;", FeaturesResources.AutoProperty, FeaturesResources.Class),
+                Diagnostic(RudeEditKind.InsertIntoClassWithLayout, "private static int g { get; } = 1;", FeaturesResources.AutoProperty, FeaturesResources.Class),
+                Diagnostic(RudeEditKind.InsertIntoClassWithLayout, "private int h { get; set; } = 1;", FeaturesResources.AutoProperty, FeaturesResources.Class),
+                Diagnostic(RudeEditKind.InsertIntoClassWithLayout, "private static int i { get; set; } = 1;", FeaturesResources.AutoProperty, FeaturesResources.Class));
         }
 
         // Design: Adding private accessors should also be allowed since we now allow adding private methods
@@ -5583,7 +5583,7 @@ class C
             var edits = GetTopEdits(src1, src2);
 
             edits.VerifyRudeDiagnostics(
-                Diagnostic(RudeEditKind.TypeUpdate, "string a", "parameter"));
+                Diagnostic(RudeEditKind.TypeUpdate, "string a", FeaturesResources.Parameter));
         }
 
         [Fact]

@@ -854,7 +854,7 @@ class SampleCollection<T>
             var active = GetActiveStatements(src1, src2);
 
             edits.VerifyRudeDiagnostics(active,
-                Diagnostic(RudeEditKind.GenericTypeUpdate, "set", "indexer setter"));
+                Diagnostic(RudeEditKind.GenericTypeUpdate, "set", CSharpFeaturesResources.IndexerSetter));
         }
 
         [Fact]
