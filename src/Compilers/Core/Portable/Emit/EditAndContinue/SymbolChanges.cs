@@ -123,6 +123,16 @@ namespace Microsoft.CodeAnalysis.Emit
 
                     default:
                         // The method had to change, otherwise the synthesized symbol wouldn't be generated
+
+                        // Since this change is calculated based on change to container,
+                        // we still need to check changes even though its container has no change
+                        // esp. when its generator is synthesized (e.g., async lambda):
+                        var synthesizedGenerator = generator as ISynthesizedMethodBodyImplementationSymbol;
+                        if (synthesizedGenerator != null)
+                        {
+                            return GetChange(generator as IDefinition);
+                        }
+
                         throw ExceptionUtilities.Unreachable;
                 }
             }

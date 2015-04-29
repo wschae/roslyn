@@ -1116,5 +1116,132 @@ End Class
 }
 ")
         End Sub
+
+        <WorkItem(1160391)>
+        <Fact>
+        Public Sub AsyncLambda()
+            Dim source0 =
+<compilation>
+    <file name="a.vb">
+Imports System
+Imports System.Threading.Tasks
+Class C
+        Sub F()
+        Dim g As Func(Of Task) = Async Function()
+                                     Await Task.FromResult(1)
+                                 End Function
+    End Sub
+End Class
+    </file>
+</compilation>
+            Dim source1 =
+<compilation>
+    <file name="a.vb">
+Imports System
+Imports System.Threading.Tasks
+Class C
+        Sub F()
+        Dim g As Func(Of Task) = Async Function()
+                                     Await Task.FromResult(2)
+                                 End Function
+    End Sub
+End Class
+    </file>
+</compilation>
+
+            Dim compilation0 = CompilationUtils.CreateCompilationWithReferences(source0, references:=LatestReferences, options:=TestOptions.DebugDll)
+            Dim compilation1 = CompilationUtils.CreateCompilationWithReferences(source1, references:=LatestReferences, options:=TestOptions.DebugDll)
+
+            Dim bytes0 = compilation0.EmitToArray()
+            Dim generation0 = EmitBaseline.CreateInitialBaseline(ModuleMetadata.CreateFromImage(bytes0), EmptyLocalsProvider)
+            Dim diff1 = compilation1.EmitDifference(
+                    generation0,
+                    ImmutableArray.Create(New SemanticEdit(SemanticEditKind.Insert, Nothing, compilation1.GetMember(Of MethodSymbol)("C.F"))))
+
+            Using md1 = diff1.GetMetadata()
+                Dim reader1 = md1.Reader
+                CheckEncLog(reader1,
+                            Row(3, TableIndex.AssemblyRef, EditAndContinueOperation.Default),
+                            Row(4, TableIndex.AssemblyRef, EditAndContinueOperation.Default),
+                            Row(23, TableIndex.MemberRef, EditAndContinueOperation.Default),
+                            Row(24, TableIndex.MemberRef, EditAndContinueOperation.Default),
+                            Row(25, TableIndex.MemberRef, EditAndContinueOperation.Default),
+                            Row(26, TableIndex.MemberRef, EditAndContinueOperation.Default),
+                            Row(27, TableIndex.MemberRef, EditAndContinueOperation.Default),
+                            Row(28, TableIndex.MemberRef, EditAndContinueOperation.Default),
+                            Row(29, TableIndex.MemberRef, EditAndContinueOperation.Default),
+                            Row(30, TableIndex.MemberRef, EditAndContinueOperation.Default),
+                            Row(31, TableIndex.MemberRef, EditAndContinueOperation.Default),
+                            Row(32, TableIndex.MemberRef, EditAndContinueOperation.Default),
+                            Row(33, TableIndex.MemberRef, EditAndContinueOperation.Default),
+                            Row(34, TableIndex.MemberRef, EditAndContinueOperation.Default),
+                            Row(35, TableIndex.MemberRef, EditAndContinueOperation.Default),
+                            Row(36, TableIndex.MemberRef, EditAndContinueOperation.Default),
+                            Row(37, TableIndex.MemberRef, EditAndContinueOperation.Default),
+                            Row(38, TableIndex.MemberRef, EditAndContinueOperation.Default),
+                            Row(39, TableIndex.MemberRef, EditAndContinueOperation.Default),
+                            Row(40, TableIndex.MemberRef, EditAndContinueOperation.Default),
+                            Row(41, TableIndex.MemberRef, EditAndContinueOperation.Default),
+                            Row(4, TableIndex.MethodSpec, EditAndContinueOperation.Default),
+                            Row(5, TableIndex.MethodSpec, EditAndContinueOperation.Default),
+                            Row(6, TableIndex.MethodSpec, EditAndContinueOperation.Default),
+                            Row(18, TableIndex.TypeRef, EditAndContinueOperation.Default),
+                            Row(19, TableIndex.TypeRef, EditAndContinueOperation.Default),
+                            Row(20, TableIndex.TypeRef, EditAndContinueOperation.Default),
+                            Row(21, TableIndex.TypeRef, EditAndContinueOperation.Default),
+                            Row(22, TableIndex.TypeRef, EditAndContinueOperation.Default),
+                            Row(23, TableIndex.TypeRef, EditAndContinueOperation.Default),
+                            Row(24, TableIndex.TypeRef, EditAndContinueOperation.Default),
+                            Row(25, TableIndex.TypeRef, EditAndContinueOperation.Default),
+                            Row(26, TableIndex.TypeRef, EditAndContinueOperation.Default),
+                            Row(27, TableIndex.TypeRef, EditAndContinueOperation.Default),
+                            Row(28, TableIndex.TypeRef, EditAndContinueOperation.Default),
+                            Row(29, TableIndex.TypeRef, EditAndContinueOperation.Default),
+                            Row(30, TableIndex.TypeRef, EditAndContinueOperation.Default),
+                            Row(4, TableIndex.TypeSpec, EditAndContinueOperation.Default),
+                            Row(5, TableIndex.TypeSpec, EditAndContinueOperation.Default),
+                            Row(6, TableIndex.TypeSpec, EditAndContinueOperation.Default),
+                            Row(4, TableIndex.StandAloneSig, EditAndContinueOperation.Default),
+                            Row(5, TableIndex.StandAloneSig, EditAndContinueOperation.Default),
+                            Row(6, TableIndex.StandAloneSig, EditAndContinueOperation.Default),
+                            Row(5, TableIndex.TypeDef, EditAndContinueOperation.Default),
+                            Row(3, TableIndex.TypeDef, EditAndContinueOperation.AddField),
+                            Row(7, TableIndex.Field, EditAndContinueOperation.Default),
+                            Row(5, TableIndex.TypeDef, EditAndContinueOperation.AddField),
+                            Row(8, TableIndex.Field, EditAndContinueOperation.Default),
+                            Row(5, TableIndex.TypeDef, EditAndContinueOperation.AddField),
+                            Row(9, TableIndex.Field, EditAndContinueOperation.Default),
+                            Row(5, TableIndex.TypeDef, EditAndContinueOperation.AddField),
+                            Row(10, TableIndex.Field, EditAndContinueOperation.Default),
+                            Row(5, TableIndex.TypeDef, EditAndContinueOperation.AddField),
+                            Row(11, TableIndex.Field, EditAndContinueOperation.Default),
+                            Row(3, TableIndex.MethodDef, EditAndContinueOperation.Default),
+                            Row(2, TableIndex.TypeDef, EditAndContinueOperation.AddMethod),
+                            Row(9, TableIndex.MethodDef, EditAndContinueOperation.Default),
+                            Row(3, TableIndex.TypeDef, EditAndContinueOperation.AddMethod),
+                            Row(10, TableIndex.MethodDef, EditAndContinueOperation.Default),
+                            Row(5, TableIndex.TypeDef, EditAndContinueOperation.AddMethod),
+                            Row(11, TableIndex.MethodDef, EditAndContinueOperation.Default),
+                            Row(5, TableIndex.TypeDef, EditAndContinueOperation.AddMethod),
+                            Row(12, TableIndex.MethodDef, EditAndContinueOperation.Default),
+                            Row(5, TableIndex.TypeDef, EditAndContinueOperation.AddMethod),
+                            Row(13, TableIndex.MethodDef, EditAndContinueOperation.Default),
+                            Row(13, TableIndex.MethodDef, EditAndContinueOperation.AddParameter),
+                            Row(2, TableIndex.Param, EditAndContinueOperation.Default),
+                            Row(9, TableIndex.CustomAttribute, EditAndContinueOperation.Default),
+                            Row(10, TableIndex.CustomAttribute, EditAndContinueOperation.Default),
+                            Row(11, TableIndex.CustomAttribute, EditAndContinueOperation.Default),
+                            Row(12, TableIndex.CustomAttribute, EditAndContinueOperation.Default),
+                            Row(3, TableIndex.MethodImpl, EditAndContinueOperation.Default),
+                            Row(4, TableIndex.MethodImpl, EditAndContinueOperation.Default),
+                            Row(3, TableIndex.NestedClass, EditAndContinueOperation.Default),
+                            Row(2, TableIndex.InterfaceImpl, EditAndContinueOperation.Default))
+
+                diff1.VerifySynthesizedMembers(
+                    "C: {_Closure$__}",
+                    "C._Closure$__: {$I1#1-0#1, _Lambda$__1#1-0#1, VB$StateMachine___Lambda$__1#1-0#1}",
+                    "C._Closure$__.VB$StateMachine___Lambda$__1#1-0#1: {$State, $Builder, $VB$NonLocal__Closure$__, $A0, MoveNext, System.Runtime.CompilerServices.IAsyncStateMachine.SetStateMachine}")
+            End Using
+        End Sub
     End Class
 End Namespace

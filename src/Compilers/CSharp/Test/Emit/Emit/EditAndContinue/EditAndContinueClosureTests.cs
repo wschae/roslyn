@@ -1562,5 +1562,88 @@ class C
                 Row(6, TableIndex.MethodDef, EditAndContinueOperation.Default),
                 Row(7, TableIndex.MethodDef, EditAndContinueOperation.Default));
         }
+
+        [WorkItem(1160391)]
+        [Fact]
+        public void AsyncLambda()
+        {
+            var source0 =
+@"using System;
+using System.Threading.Tasks;
+class C
+{
+    static void F()
+    {
+        Func<Task> g = async () =>
+        {
+            await Task.FromResult(1);
+        };
+    }
+}";
+            var source1 =
+@"using System;
+using System.Threading.Tasks;
+class C
+{
+    static void F()
+    {
+        Func<Task> g = async () =>
+        {
+            await Task.FromResult(2);
+        };
+    }
+}";
+            var compilation0 = CreateCompilationWithMscorlib45(source0, options: TestOptions.DebugDll);
+            var compilation1 = compilation0.WithSource(source1);
+            var bytes0 = compilation0.EmitToArray();
+            var generation0 = EmitBaseline.CreateInitialBaseline(ModuleMetadata.CreateFromImage(bytes0), EmptyLocalsProvider);
+
+            var diff1 = compilation1.EmitDifference(
+                generation0,
+                ImmutableArray.Create(new SemanticEdit(SemanticEditKind.Update, compilation0.GetMember<MethodSymbol>("C.F"), compilation1.GetMember<MethodSymbol>("C.F"))));
+
+            using (var md1 = diff1.GetMetadata())
+            {
+                var reader1 = md1.Reader;
+
+                CheckEncLogDefinitions(reader1,
+                    Row(4, TableIndex.StandAloneSig, EditAndContinueOperation.Default),
+                    Row(5, TableIndex.StandAloneSig, EditAndContinueOperation.Default),
+                    Row(6, TableIndex.StandAloneSig, EditAndContinueOperation.Default),
+                    Row(5, TableIndex.TypeDef, EditAndContinueOperation.Default),
+                    Row(3, TableIndex.TypeDef, EditAndContinueOperation.AddField),
+                    Row(7, TableIndex.Field, EditAndContinueOperation.Default),
+                    Row(5, TableIndex.TypeDef, EditAndContinueOperation.AddField),
+                    Row(8, TableIndex.Field, EditAndContinueOperation.Default),
+                    Row(5, TableIndex.TypeDef, EditAndContinueOperation.AddField),
+                    Row(9, TableIndex.Field, EditAndContinueOperation.Default),
+                    Row(5, TableIndex.TypeDef, EditAndContinueOperation.AddField),
+                    Row(10, TableIndex.Field, EditAndContinueOperation.Default),
+                    Row(5, TableIndex.TypeDef, EditAndContinueOperation.AddField),
+                    Row(11, TableIndex.Field, EditAndContinueOperation.Default),
+                    Row(1, TableIndex.MethodDef, EditAndContinueOperation.Default),
+                    Row(3, TableIndex.TypeDef, EditAndContinueOperation.AddMethod),
+                    Row(9, TableIndex.MethodDef, EditAndContinueOperation.Default),
+                    Row(5, TableIndex.TypeDef, EditAndContinueOperation.AddMethod),
+                    Row(10, TableIndex.MethodDef, EditAndContinueOperation.Default),
+                    Row(5, TableIndex.TypeDef, EditAndContinueOperation.AddMethod),
+                    Row(11, TableIndex.MethodDef, EditAndContinueOperation.Default),
+                    Row(5, TableIndex.TypeDef, EditAndContinueOperation.AddMethod),
+                    Row(12, TableIndex.MethodDef, EditAndContinueOperation.Default),
+                    Row(12, TableIndex.MethodDef, EditAndContinueOperation.AddParameter),
+                    Row(2, TableIndex.Param, EditAndContinueOperation.Default),
+                    Row(7, TableIndex.CustomAttribute, EditAndContinueOperation.Default),
+                    Row(8, TableIndex.CustomAttribute, EditAndContinueOperation.Default),
+                    Row(3, TableIndex.MethodImpl, EditAndContinueOperation.Default),
+                    Row(4, TableIndex.MethodImpl, EditAndContinueOperation.Default),
+                    Row(3, TableIndex.NestedClass, EditAndContinueOperation.Default),
+                    Row(2, TableIndex.InterfaceImpl, EditAndContinueOperation.Default));
+
+                diff1.VerifySynthesizedMembers(
+                    "C: {<>c}",
+                    "C.<>c: {<>9__0#1_0#1, <F>b__0#1_0#1, <<F>b__0#1_0#1>d}",
+                    "C.<>c.<<F>b__0#1_0#1>d: {<>1__state, <>t__builder, <>4__this, <>u__1, MoveNext, SetStateMachine}");
+            }
+        }
     }
 }
