@@ -4582,6 +4582,99 @@ class B
             }
         }
 
+        [Fact, WorkItem(1170706)]
+        public void TestNeedsName()
+        {
+            var source0 = 
+@"using System;
+using System.Linq;
+
+class C
+{
+    static void F()
+    {
+        var v = new { A = 1, B = true };
+    }
+}";
+            var source1 =
+@"using System;
+using System.Linq;
+
+class C
+{
+    static void F()
+    {
+        var v = new { A = 2, B = true };
+    }
+}";
+            var source2 =
+@"using System;
+using System.Linq;
+
+class C
+{
+    static void F()
+    {
+        var v = new { A = 3, B = true };
+    }
+}";
+
+            var compilation0 = CreateCompilationWithMscorlib(source0, new[] { SystemCoreRef }, options: ComSafeDebugDll.WithMetadataImportOptions(MetadataImportOptions.All));
+            var compilation1 = compilation0.WithSource(source1);
+            var compilation2 = compilation1.WithSource(source2);
+            var v0 = CompileAndVerify(compilation0);
+            var md0 = ModuleMetadata.CreateFromImage(v0.EmittedAssemblyData);
+
+            var f0 = compilation0.GetMember<MethodSymbol>("C.F");
+            var f1 = compilation1.GetMember<MethodSymbol>("C.F");
+            var f2 = compilation2.GetMember<MethodSymbol>("C.F");
+
+            var generation0 = EmitBaseline.CreateInitialBaseline(md0, v0.CreateSymReader().GetEncMethodDebugInfo);
+
+            var diff1 = compilation1.EmitDifference(
+                generation0,
+                ImmutableArray.Create(new SemanticEdit(SemanticEditKind.Update, f0, f1, GetEquivalentNodesMap(f1, f0), preserveLocalVariables: true)));
+
+            // no new type has been added:
+            diff1.VerifySynthesizedMembers(
+                "<>f__AnonymousType0<<A>j__TPar, <B>j__TPar>: {Equals, GetHashCode, ToString}");
+
+            using (var md1 = diff1.GetMetadata())
+            {
+                var reader1 = md1.Reader;
+
+                CheckEncLog(reader1,
+                    Row(2, TableIndex.AssemblyRef, EditAndContinueOperation.Default),
+                    Row(20, TableIndex.MemberRef, EditAndContinueOperation.Default),
+                    Row(14, TableIndex.TypeRef, EditAndContinueOperation.Default),
+                    Row(7, TableIndex.TypeSpec, EditAndContinueOperation.Default),
+                    Row(4, TableIndex.StandAloneSig, EditAndContinueOperation.Default),
+                    Row(7, TableIndex.MethodDef, EditAndContinueOperation.Default));
+            }          
+
+            var diff2 = compilation2.EmitDifference(
+                diff1.NextGeneration,
+                ImmutableArray.Create(new SemanticEdit(SemanticEditKind.Update, f1, f2, GetEquivalentNodesMap(f2, f1), preserveLocalVariables: true)));
+
+            // no new members:
+            diff2.VerifySynthesizedMembers(
+                "<>f__AnonymousType0<<A>j__TPar, <B>j__TPar>: {Equals, GetHashCode, ToString}");
+
+            using (var md2 = diff2.GetMetadata())
+            {
+                var reader2 = md2.Reader;
+
+                CheckEncLog(reader2,
+                    Row(3, TableIndex.AssemblyRef, EditAndContinueOperation.Default),
+                    Row(21, TableIndex.MemberRef, EditAndContinueOperation.Default),
+                    Row(15, TableIndex.TypeRef, EditAndContinueOperation.Default),
+                    Row(16, TableIndex.TypeRef, EditAndContinueOperation.Default),
+                    Row(8, TableIndex.TypeSpec, EditAndContinueOperation.Default),
+                    Row(5, TableIndex.StandAloneSig, EditAndContinueOperation.Default),
+                    Row(7, TableIndex.MethodDef, EditAndContinueOperation.Default));
+            }
+        }
+
         /// <summary>
         /// Should not re-use locals if the method metadata
         /// signature is unsupported.

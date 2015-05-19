@@ -230,6 +230,75 @@ class C
         }
 
         [Fact]
+        public void MethodWithTest()
+        {
+            var source0 = MarkedSource(@"
+using System;
+
+class C
+{
+    void F()
+    {
+        Func<int, int> x = <N:0>(n) => n+1</N:0>;
+        Action<int> y = <N:1>(n) => Console.WriteLine(x(n))</N:1>;
+        y(1);
+    }
+}");
+            var source1 = MarkedSource(@"
+using System;
+
+class C
+{
+    void F()
+    {
+        Func<int, int> x = <N:0>(n) => n+1</N:0>;
+        Action<int> y = <N:1>(n) => Console.WriteLine(x(n))</N:1>;
+        y(10);
+    }
+}");
+            var compilation0 = CreateCompilationWithMscorlib(source0.Tree, options: ComSafeDebugDll.WithMetadataImportOptions(MetadataImportOptions.All));
+            var compilation1 = compilation0.WithSource(source1.Tree);
+
+            var v0 = CompileAndVerify(compilation0);
+            var md0 = ModuleMetadata.CreateFromImage(v0.EmittedAssemblyData);
+
+            var f0 = compilation0.GetMember<MethodSymbol>("C.F");
+            var f1 = compilation1.GetMember<MethodSymbol>("C.F");
+
+            var generation0 = EmitBaseline.CreateInitialBaseline(md0, v0.CreateSymReader().GetEncMethodDebugInfo);
+
+            var diff1 = compilation1.EmitDifference(
+                generation0,
+                ImmutableArray.Create(new SemanticEdit(SemanticEditKind.Update, f0, f1, GetSyntaxMapFromMarkers(source0, source1), preserveLocalVariables: true)));
+
+            // no new synthesized members generated (with #1 in names):
+            diff1.VerifySynthesizedMembers(
+                "C: {<>c__DisplayClass0_0#1, <>c}",
+                "C.<>c: {<>9__0_0, <F>b__0_0}",
+                "C.<>c__DisplayClass0_0#1: {x, <F>b__1}");
+
+            var md1 = diff1.GetMetadata();
+            var reader1 = md1.Reader;
+
+            // Method updates
+            CheckEncLogDefinitions(reader1,
+                Row(2, TableIndex.StandAloneSig, EditAndContinueOperation.Default),
+                Row(5, TableIndex.TypeDef, EditAndContinueOperation.Default),
+                Row(5, TableIndex.TypeDef, EditAndContinueOperation.AddField),
+                Row(4, TableIndex.Field, EditAndContinueOperation.Default),
+                Row(1, TableIndex.MethodDef, EditAndContinueOperation.Default),
+                Row(7, TableIndex.MethodDef, EditAndContinueOperation.Default),
+                Row(5, TableIndex.TypeDef, EditAndContinueOperation.AddMethod),
+                Row(8, TableIndex.MethodDef, EditAndContinueOperation.Default),
+                Row(5, TableIndex.TypeDef, EditAndContinueOperation.AddMethod),
+                Row(9, TableIndex.MethodDef, EditAndContinueOperation.Default),
+                Row(9, TableIndex.MethodDef, EditAndContinueOperation.AddParameter),
+                Row(3, TableIndex.Param, EditAndContinueOperation.Default),
+                Row(6, TableIndex.CustomAttribute, EditAndContinueOperation.Default),
+                Row(3, TableIndex.NestedClass, EditAndContinueOperation.Default));
+        }
+
+        [Fact]
         public void MethodWithClosure1()
         {
             var source0 = MarkedSource(@"

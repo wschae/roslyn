@@ -103,9 +103,9 @@ namespace Roslyn.Test.Utilities
         {
             var map0 = source0.MapMarksToSyntaxNodes();
             var map1 = source1.MapSyntaxNodesToMarks();
-#if DUMP
+//#if DUMP
             Console.WriteLine("========");
-#endif
+//#endif
             return new Func<SyntaxNode, SyntaxNode>(node1 =>
             {
                 int mark;
@@ -115,9 +115,9 @@ namespace Roslyn.Test.Utilities
                     return result;
                 }
 
-#if DUMP
+//#if DUMP
                 Console.WriteLine($"? {node1.RawKind} [[{node1}]]");
-#endif
+//#endif
                 return null;
             });
         }

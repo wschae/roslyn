@@ -2879,7 +2879,11 @@ namespace Microsoft.CodeAnalysis
         /// <exception cref="BadImageFormatException">An exception from metadata reader.</exception>
         internal int GetAssemblyReferenceIndexOrThrow(AssemblyReferenceHandle assemblyRef)
         {
-            return MetadataReader.GetRowNumber(assemblyRef) - 1;
+            int index = MetadataReader.GetRowNumber(assemblyRef);
+            Debug.Assert(index > 0);
+
+            return index - 1;
+            ////return MetadataReader.GetRowNumber(assemblyRef) - 1;
         }
 
         internal static bool IsNested(TypeAttributes flags)

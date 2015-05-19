@@ -224,6 +224,72 @@ End Class
         End Sub
 
         <Fact>
+        Public Sub MethodWithTest()
+            Dim source0 = MarkedSource("
+Imports System
+Class C
+    Sub F()
+        Dim x = <N:0>Function(n As Integer) n+1</N:0>
+        Dim y = <N:1>Sub(n As Integer) Console.WriteLine(x(n))</N:1>
+        y(1)
+    End Sub
+End Class
+")
+            Dim source1 = MarkedSource("
+Imports System
+Class C
+    Sub F()
+        Dim x = <N:0>Function(n As Integer) n+1</N:0>
+        Dim y = <N:1>Sub(n As Integer) Console.WriteLine(x(n))</N:1>
+        y(10)
+    End Sub
+End Class
+")
+
+            Dim compilation0 = CreateCompilationWithReferences(source0.Tree, references:=LatestReferences, options:=ComSafeDebugDll.WithMetadataImportOptions(MetadataImportOptions.All))
+            Dim compilation1 = compilation0.WithSource(source1.Tree)
+
+            Dim v0 = CompileAndVerify(compilation0)
+            Dim md0 = ModuleMetadata.CreateFromImage(v0.EmittedAssemblyData)
+
+            Dim f0 = compilation0.GetMember(Of MethodSymbol)("C.F")
+            Dim f1 = compilation1.GetMember(Of MethodSymbol)("C.F")
+
+            Dim generation0 = EmitBaseline.CreateInitialBaseline(md0, Function(handle) v0.CreateSymReader().GetEncMethodDebugInfo(handle))
+
+            Dim diff1 = compilation1.EmitDifference(
+                    generation0,
+                    ImmutableArray.Create(New SemanticEdit(SemanticEditKind.Update, f0, f1, GetSyntaxMapFromMarkers(source0, source1), preserveLocalVariables:=True)))
+
+            ' no new synthesized members generated (with #1 in names)
+            diff1.VerifySynthesizedMembers(
+                "C: {_Closure$__1-0#1, _Closure$__}",
+                "C._Closure$__: {$I1-0, _Lambda$__1-0}",
+                "C._Closure$__1-0#1: {_Lambda$__1}") ' "C.<>c__DisplayClass0_0#1: {x, <F>b__1}");
+
+            Dim md1 = diff1.GetMetadata()
+            Dim reader1 = md1.Reader
+
+            ' Method updates
+            CheckEncLogDefinitions(reader1,
+                Row(3, TableIndex.StandAloneSig, EditAndContinueOperation.Default),
+                Row(4, TableIndex.StandAloneSig, EditAndContinueOperation.Default),
+                Row(7, TableIndex.TypeDef, EditAndContinueOperation.Default),
+                Row(7, TableIndex.TypeDef, EditAndContinueOperation.AddField),
+                Row(4, TableIndex.Field, EditAndContinueOperation.Default),
+                Row(10, TableIndex.MethodDef, EditAndContinueOperation.Default),
+                Row(15, TableIndex.MethodDef, EditAndContinueOperation.Default),
+                Row(7, TableIndex.TypeDef, EditAndContinueOperation.AddMethod),
+                Row(16, TableIndex.MethodDef, EditAndContinueOperation.Default),
+                Row(7, TableIndex.TypeDef, EditAndContinueOperation.AddMethod),
+                Row(17, TableIndex.MethodDef, EditAndContinueOperation.Default),
+                Row(17, TableIndex.MethodDef, EditAndContinueOperation.AddParameter),
+                Row(17, TableIndex.Param, EditAndContinueOperation.Default),
+                Row(10, TableIndex.CustomAttribute, EditAndContinueOperation.Default),
+                Row(3, TableIndex.NestedClass, EditAndContinueOperation.Default))
+        End Sub
+
+        <Fact>
         Public Sub MethodWithClosure1()
             Dim source0 = MarkedSource("
 Imports System
