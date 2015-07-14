@@ -3091,9 +3091,12 @@ Namespace Microsoft.CodeAnalysis.VisualBasic.EditAndContinue
 
         Friend Overrides Sub ReportOtherRudeEditsAroundActiveStatement(diagnostics As List(Of RudeEditDiagnostic),
                                                                        match As Match(Of SyntaxNode),
+                                                                       oldBody As SyntaxNode,
+                                                                       newBody As SyntaxNode,
                                                                        oldActiveStatement As SyntaxNode,
                                                                        newActiveStatement As SyntaxNode,
-                                                                       isLeaf As Boolean)
+                                                                       isLeaf As Boolean,
+                                                                       isInLambdaBody As Boolean)
 
             Dim onErrorOrResumeStatement = FindOnErrorOrResumeStatement(match.NewRoot)
             If onErrorOrResumeStatement IsNot Nothing Then
