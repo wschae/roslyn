@@ -3015,12 +3015,11 @@ namespace Microsoft.CodeAnalysis.CSharp.EditAndContinue
             SyntaxNode newBody,
             SyntaxNode oldActiveStatement,
             SyntaxNode newActiveStatement,
-            bool isLeaf,
-            bool isInLambdaBody)
+            bool isLeaf)
         {
             ReportRudeEditsForAncestorsDeclaringInterStatementTemps(diagnostics, match, oldActiveStatement, newActiveStatement, isLeaf);
             ReportRudeEditsForCheckedStatements(diagnostics, oldActiveStatement, newActiveStatement, isLeaf);
-            ReportRudeEditsForStateMachineMethod(diagnostics, oldBody, newBody, isInLambdaBody);
+            ReportRudeEditsForStateMachineMethod(diagnostics, oldBody, newBody, oldActiveStatement, newActiveStatement);
         }
 
         private void ReportRudeEditsForCheckedStatements(
@@ -3137,13 +3136,20 @@ namespace Microsoft.CodeAnalysis.CSharp.EditAndContinue
             List<RudeEditDiagnostic> diagnostics,
             SyntaxNode oldBody,
             SyntaxNode newBody,
-            bool isInLambdaBody)
+            SyntaxNode oldActiveStatement,
+            SyntaxNode newActiveStatement)
         {
+
+            var isInLambdaBody = FindEnclosingLambdaBody(oldBody, oldActiveStatement);
+            if (isInLambdaBody != null)
+            {
+                return;
+            }
+
             // It is allow to update a regular method to an async method or an iterator.
             // The only restriction is a presence of an active statement in the method body
             // since the debugger does not support remapping active statements to a different method.
-            if (!isInLambdaBody &&
-                !SyntaxUtilities.IsAsyncMethodOrLambda(oldBody.Parent) && SyntaxUtilities.IsAsyncMethodOrLambda(newBody.Parent))
+            if (!SyntaxUtilities.IsAsyncMethodOrLambda(oldBody.Parent) && SyntaxUtilities.IsAsyncMethodOrLambda(newBody.Parent))
             {             
                 diagnostics.Add(new RudeEditDiagnostic(
                     RudeEditKind.UpdatingStateMachineMethodAroundActiveStatement,

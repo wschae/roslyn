@@ -3095,8 +3095,7 @@ Namespace Microsoft.CodeAnalysis.VisualBasic.EditAndContinue
                                                                        newBody As SyntaxNode,
                                                                        oldActiveStatement As SyntaxNode,
                                                                        newActiveStatement As SyntaxNode,
-                                                                       isLeaf As Boolean,
-                                                                       isInLambdaBody As Boolean)
+                                                                       isLeaf As Boolean)
 
             Dim onErrorOrResumeStatement = FindOnErrorOrResumeStatement(match.NewRoot)
             If onErrorOrResumeStatement IsNot Nothing Then
